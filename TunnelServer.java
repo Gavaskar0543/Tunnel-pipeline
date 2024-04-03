@@ -1,7 +1,9 @@
 import java.io.*;
 import java.net.*;
-
+import java.util.logging.*;
 public class TunnelServer {
+    private static final Logger logger = Logger.getLogger(TunnelServer.class.getName());
+
     public static void main(String[] args) {
         try {
             // Create a server socket to listen for incoming connections
@@ -11,7 +13,7 @@ public class TunnelServer {
             while (true) {
                 // Accept incoming client connections
                 Socket clientSocket = serverSocket.accept();
-                System.out.println("Client connected: " + clientSocket);
+               logger.info("Client connected: " + clientSocket);
                 
                 // Connect to the destination server
                 Socket destinationSocket = new Socket("localhost", 3000); // Example destination server
@@ -29,8 +31,11 @@ public class TunnelServer {
                         int bytesRead;
                         while ((bytesRead = clientInput.read(buffer)) != -1) {
                             destinationOutput.write(buffer, 0, bytesRead);
+                            String dataSent = new String(buffer, 0, bytesRead);
+                            logger.info("Data sent from client : " + dataSent);
                         }
                     } catch (IOException e) {
+                        logger.severe("Error accepting client connection: " + e.getMessage());
                         e.printStackTrace();
                     }
                 });
@@ -41,8 +46,12 @@ public class TunnelServer {
                         int bytesRead;
                         while ((bytesRead = destinationInput.read(buffer)) != -1) {
                             clientOutput.write(buffer, 0, bytesRead);
+                            String dataReceived = new String(buffer, 0, bytesRead);
+                            logger.info("Data received from destination server: " + dataReceived);
+                        
                         }
                     } catch (IOException e) {
+                        logger.severe("Error accepting client connection: " + e.getMessage());
                         e.printStackTrace();
                     }
                 });
@@ -60,6 +69,8 @@ public class TunnelServer {
                 destinationSocket.close();
             }
         } catch (IOException | InterruptedException e) {
+            logger.severe("Error accepting client connection: " + e.getMessage());
+
             e.printStackTrace();
         }
     }
