@@ -1,10 +1,13 @@
 import java.io.*;
 import java.net.*;
-import java.util.logging.*;
+import java.util.UUID;
+import java.util.logging.Logger;
 public class TunnelServer {
     private static final Logger logger = Logger.getLogger(TunnelServer.class.getName());
 
     public static void main(String[] args) {
+        String path = "tunnellogs.txt";
+        LogManager logManager = new LogManager(path);
         try {
             // Create a server socket to listen for incoming connections
             ServerSocket serverSocket = new ServerSocket(8080);
@@ -16,7 +19,7 @@ public class TunnelServer {
                logger.info("Client connected: " + clientSocket);
                 
                 // Connect to the destination server
-                Socket destinationSocket = new Socket("localhost", 3000); // Example destination server
+                Socket destinationSocket = new Socket("localhost", 8000); // Example destination server
                 
                 // Create input and output streams for client and server connections
                 InputStream clientInput = clientSocket.getInputStream();
@@ -24,6 +27,7 @@ public class TunnelServer {
                 InputStream destinationInput = destinationSocket.getInputStream();
                 OutputStream destinationOutput = destinationSocket.getOutputStream();
                 
+
                 // Start separate threads for bidirectional data transfer
                 Thread clientToDestination = new Thread(() -> {
                     try {
@@ -74,4 +78,8 @@ public class TunnelServer {
             e.printStackTrace();
         }
     }
+
+
+
+
 }
